@@ -61,7 +61,6 @@ func (bm *BoxMüller) RandLimits(p Polarity, min float64, max float64) (float64,
 	}
 }
 
-//func RandomWalk(ctx context.Context, mean float64, sd float64, rate time.Duration, rateDeviation time.Duration, polarity Polarity) <-chan float64 {
 func RandomWalk(ctx context.Context, mean float64, sd float64, opts ...Option) <-chan float64 {
 
 	options := &randomWalkOptions{}
