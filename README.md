@@ -1,5 +1,5 @@
 # randomwalk-go
-Creates a trend-oriented stream of random numbers using a Box Müller transform: an implementation of [random-walk](https://www.npmjs.com/package/random-walk) in go.
+Creates a trend-oriented stream of random numbers using a Box Müller transform. `randomwalk-go` is an implementation of [random-walk](https://www.npmjs.com/package/random-walk) in go.
 
 
 ## Install
