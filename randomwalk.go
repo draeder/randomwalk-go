@@ -1,6 +1,7 @@
 package randomwalk
 
 import (
+	"context"
 	"math"
 	"math/rand"
 	"time"
@@ -11,6 +12,22 @@ type BoxMüller struct {
 	mu    float64
 	sigma float64
 }
+
+type randomWalkOptions struct {
+	rate          time.Duration
+	rateDeviation time.Duration
+	polarity      Polarity
+	min           float64
+	max           float64
+}
+
+type Polarity int
+
+const (
+	Both Polarity = iota
+	Positive
+	Negative
+)
 
 func New(mu, sigma float64) *BoxMüller {
 	return &BoxMüller{
@@ -28,26 +45,52 @@ func (bm *BoxMüller) Rand() (float64, float64) {
 	return bm.sigma*z1 + bm.mu, bm.sigma*z2 + bm.mu
 }
 
-func RandomWalk(mean float64, sd float64, rate time.Duration, rateDeviation time.Duration) <-chan float64 {
+func (bm *BoxMüller) RandLimits(p Polarity, min float64, max float64) (float64, float64) {
 
-	min := int64(rate - rateDeviation)
-	max := int64(rate + rateDeviation)
+	z1, z2 := bm.Rand()
+
+	switch p {
+	case Positive:
+		bm.mu = math.Max(z2, min)
+		return math.Max(z1, min), bm.mu
+	case Negative:
+		bm.mu = math.Min(z2, -max)
+		return math.Min(z1, -max), bm.mu
+	default:
+		return z1, z2
+	}
+}
+
+//func RandomWalk(ctx context.Context, mean float64, sd float64, rate time.Duration, rateDeviation time.Duration, polarity Polarity) <-chan float64 {
+func RandomWalk(ctx context.Context, mean float64, sd float64, opts ...Option) <-chan float64 {
+
+	options := &randomWalkOptions{}
+
+	for _, opt := range opts {
+		opt(options)
+	}
+
+	min := int64(options.rate - options.rateDeviation)
+	max := int64(options.rate + options.rateDeviation)
 
 	rw := make(chan float64, 0)
 
 	go func() {
 		defer close(rw)
+
+		bm := New(mean, sd)
+
 		for {
-			<-time.After(time.Duration(rand.Int63n(max-min+1) + min))
-			bm := New(mean, sd)
-			z1, z2 := bm.Rand()
-			_ = z1
-			mean = z2
+			select {
+			case <-time.After(time.Duration(rand.Int63n(max-min+1) + min)):
+			case <-ctx.Done():
+				return
+			}
+
+			z1, z2 := bm.RandLimits(options.polarity, options.min, options.max)
+			bm.mu = z2
 
 			rw <- z1
-
-			//fmt.Println("\033[H\033[2J")
-			//fmt.Println(math.Round(z1*100) / 100)
 
 		}
 	}()
