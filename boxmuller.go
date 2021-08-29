@@ -41,6 +41,7 @@ func New(mu, sigma float64, opts ...BoxMüllerOption) *BoxMüller {
 
 }
 
+// SetMu sets the mu (mean) of the BoxMuller transform
 func (bm *BoxMüller) SetMu(x float64) {
 	bm.mu = x
 }
