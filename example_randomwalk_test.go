@@ -14,7 +14,7 @@ func ExampleRandomWalk() {
 	defer cancel()
 
 	// A set of optional arguments that may be passed into randomwalk.
-	opts := []randomwalk.RandomWalkOption{
+	opts := []randomwalk.RwOption{
 		randomwalk.WithRate(30*time.Millisecond, 10*time.Millisecond),
 		randomwalk.OnlyPositive(),
 		randomwalk.Min(0.00000000001),

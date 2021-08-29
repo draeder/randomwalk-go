@@ -23,7 +23,7 @@ type randomwalkOptions struct {
 
 // RandomWalk generates the trend-oriented stream of random numbers using a Box Müller transform,
 // which will be sent through the returned channel.
-func RandomWalk(ctx context.Context, mean float64, sd float64, opts ...RandomWalkOption) <-chan float64 {
+func RandomWalk(ctx context.Context, mean float64, sd float64, opts ...RwOption) <-chan float64 {
 
 	options := &randomwalkOptions{}
 
