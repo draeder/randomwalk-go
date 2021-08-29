@@ -1,15 +1,4 @@
-# randomwalk-go
-Creates a trend-oriented stream of random numbers using a Box Müller transform. `randomwalk-go` is an implementation of [random-walk](https://www.npmjs.com/package/random-walk) in go.
-
-
-## Install
-```
-go get github.com/draeder/randomwalk-go
-```
-
-## Example
-```go
-package main
+package randomwalk_test
 
 import (
 	"context"
@@ -19,11 +8,13 @@ import (
 	"github.com/draeder/randomwalk-go"
 )
 
-func main() {
+func ExampleRandomWalk() {
+	// Provides a context to cancel the randomwalk stream after 5 seconds.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	opts := []randomwalk.Option{
+	// A set of optional arguments that may be passed into randomwalk.
+	opts := []randomwalk.RandomWalkOption{
 		randomwalk.WithRate(30*time.Millisecond, 10*time.Millisecond),
 		randomwalk.OnlyPositive(),
 		randomwalk.Min(0.00000000001),
@@ -35,7 +26,4 @@ func main() {
 	for n := range walk {
 		fmt.Println(n)
 	}
-
-	fmt.Println(ctx.Err())
 }
-```
